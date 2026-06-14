@@ -1,33 +1,49 @@
 import streamlit as st
-import pandas as pd
 
-st.set_page_config(page_title="Staq ROI Simulator", layout="centered")
+# Configuration de la page
+st.set_page_config(page_title="Staq | ROI & Pricing", layout="wide")
 
-st.title("🚀 Staq ROI Simulator")
-st.subheader("Time-to-Market & Business Value Analysis")
+# Navigation
+page = st.sidebar.radio("Navigation", ["Simulateur ROI", "Modèle Pricing Staq"])
 
-# Sidebar inputs
-st.sidebar.header("Paramètres du projet")
-dev_salary = st.sidebar.number_input("Salaire annuel moyen Développeur (€)", value=75000)
-num_devs = st.sidebar.slider("Nombre de développeurs sur le projet", 1, 10, 3)
-time_to_build_months = st.sidebar.slider("Temps de build interne (mois)", 6, 24, 18)
-staq_annual_cost = st.sidebar.number_input("Coût annuel licence Staq (€)", value=50000)
+if page == "Simulateur ROI":
+    st.title("🚀 Staq ROI Simulator")
+    st.write("---")
+    
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        st.subheader("Paramètres")
+        dev_salary = st.number_input("Salaire annuel développeur (€)", value=75000)
+        num_devs = st.slider("Nombre de développeurs", 1, 10, 3)
+        time_build = st.slider("Temps de build interne (mois)", 6, 24, 18)
+        cost_staq = st.number_input("Coût annuel Staq (€)", value=50000)
+        
+    with col2:
+        st.subheader("Analyse de Valeur")
+        internal_cost = (dev_salary / 12) * time_build * num_devs
+        staq_cost = cost_staq * (time_build / 12)
+        savings = internal_cost - staq_cost
+        
+        m1, m2 = st.columns(2)
+        m1.metric("Coût Build Interne", f"{internal_cost:,.0f} €")
+        m2.metric("Coût avec Staq", f"{staq_cost:,.0f} €")
+        
+        st.success(f"Économie totale : {savings:,.0f} €")
 
-# Calculations
-internal_dev_cost = (dev_salary / 12) * time_to_build_months * num_devs
-staq_total_cost = staq_annual_cost * (time_to_build_months / 12)
-savings = internal_dev_cost - staq_total_cost
-
-# Display
-col1, col2 = st.columns(2)
-col1.metric("Coût Build Interne", f"{internal_dev_cost:,.0f} €")
-col2.metric("Coût avec Staq", f"{staq_total_cost:,.0f} €")
-
-st.success(f"Économie totale potentielle : {savings:,.0f} €")
-
-st.markdown("""
-### Pourquoi Staq est le meilleur choix :
-1. **Time-to-Market :** Réduction du temps de développement grâce aux APIs pré-intégrées.
-2. **Conformité :** Gestion des enjeux réglementaires (KYC/AML) native.
-3. **Risque :** Réduction drastique des risques d'échec technique sur le build de base.
-""")
+elif page == "Modèle Pricing Staq":
+    st.title("💰 Modèle de Pricing Staq")
+    st.write("Transparence totale. Aucun coût caché.")
+    
+    st.info("""
+    **Best of Both Worlds :**
+    *   **PaaS :** Choisissez uniquement les services dont vous avez besoin (Payments, Cards, Accounts).
+    *   **SaaS :** Nous gérons le backend, la sécurité et la conformité.
+    *   **Scale :** Payez au nombre d'utilisateurs. Plus vous grandissez, plus vos coûts s'optimisent.
+    """)
+    
+    st.table({
+        "Service": ["BaaS", "Cartes", "Identité", "Prêts"],
+        "Modèle": ["PaaS", "PaaS", "PaaS", "SaaS"],
+        "Avantage": ["Infra modulable", "Émission rapide", "Conformité native", "Conversion élevée"]
+    })
